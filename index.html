@@ -21,12 +21,12 @@
     header {
       background: #111827;
       color: white;
-      padding: 20px;
+      padding: 28px 15px;
       text-align: center;
     }
 
     header h1 {
-      font-size: 32px;
+      font-size: 34px;
     }
 
     header p {
@@ -35,14 +35,14 @@
     }
 
     .container {
-      max-width: 1000px;
-      margin: 40px auto;
+      max-width: 1100px;
+      margin: 35px auto;
       padding: 20px;
     }
 
     .tools {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       gap: 20px;
     }
 
@@ -67,19 +67,63 @@
       background: #2563eb;
       color: white;
       border: none;
-      padding: 10px 18px;
+      padding: 11px 18px;
       border-radius: 8px;
       cursor: pointer;
+      font-size: 15px;
     }
 
     button:hover {
       background: #1d4ed8;
     }
 
+    input,
+    textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+
+    textarea {
+      height: 120px;
+      resize: vertical;
+    }
+
+    .result {
+      margin-top: 15px;
+      padding: 10px;
+      background: #f1f5f9;
+      border-radius: 8px;
+      word-break: break-word;
+    }
+
+    #qrImage {
+      margin-top: 15px;
+      max-width: 180px;
+    }
+
     footer {
       text-align: center;
       padding: 30px;
       color: #777;
+    }
+
+    @media (max-width: 600px) {
+      header h1 {
+        font-size: 28px;
+      }
+
+      .container {
+        margin: 20px auto;
+        padding: 15px;
+      }
+
+      .tool {
+        padding: 20px;
+      }
     }
   </style>
 </head>
@@ -95,36 +139,67 @@
 
     <div class="tools">
 
+      <!-- Calculator -->
       <div class="tool">
         <h2>Calculator</h2>
-        <p>Quickly calculate numbers.</p>
-        <button onclick="alert('Calculator coming soon!')">
-          Open
-        </button>
+        <p>Calculate numbers quickly.</p>
+
+        <input type="text" id="calcInput" placeholder="Example: 25 + 10 * 2">
+
+        <button onclick="calculate()">Calculate</button>
+
+        <div class="result" id="calcResult">
+          Result will appear here
+        </div>
       </div>
 
+
+      <!-- Text Counter -->
       <div class="tool">
         <h2>Text Counter</h2>
         <p>Count words and characters.</p>
-        <button onclick="alert('Text Counter coming soon!')">
-          Open
-        </button>
+
+        <textarea id="textInput"
+          placeholder="Type or paste your text here..."
+          oninput="countText()"></textarea>
+
+        <div class="result">
+          Characters: <span id="charCount">0</span><br>
+          Words: <span id="wordCount">0</span>
+        </div>
       </div>
 
+
+      <!-- Password Generator -->
       <div class="tool">
         <h2>Password Generator</h2>
         <p>Generate a random password.</p>
+
         <button onclick="generatePassword()">
           Generate
         </button>
+
+        <div class="result" id="passwordResult">
+          Your password will appear here
+        </div>
       </div>
 
+
+      <!-- QR Generator -->
       <div class="tool">
         <h2>QR Generator</h2>
-        <p>Create QR codes easily.</p>
-        <button onclick="alert('QR Generator coming soon!')">
-          Open
+        <p>Create a QR code from text or a link.</p>
+
+        <input type="text" id="qrInput"
+          placeholder="Enter text or website link">
+
+        <button onclick="generateQR()">
+          Generate QR
         </button>
+
+        <br>
+
+        <img id="qrImage" alt="QR Code">
       </div>
 
     </div>
@@ -135,8 +210,44 @@
     © 2026 QuickTools
   </footer>
 
+
   <script>
+
+    // Calculator
+    function calculate() {
+      const input = document.getElementById("calcInput").value;
+
+      try {
+        const result = Function('"use strict"; return (' + input + ')')();
+
+        document.getElementById("calcResult").innerText =
+          "Result: " + result;
+      } catch {
+        document.getElementById("calcResult").innerText =
+          "Please enter a valid calculation.";
+      }
+    }
+
+
+    // Text Counter
+    function countText() {
+      const text = document.getElementById("textInput").value;
+
+      document.getElementById("charCount").innerText =
+        text.length;
+
+      const words = text.trim() === ""
+        ? 0
+        : text.trim().split(/\s+/).length;
+
+      document.getElementById("wordCount").innerText =
+        words;
+    }
+
+
+    // Password Generator
     function generatePassword() {
+
       const chars =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%";
 
@@ -146,10 +257,30 @@
         password += chars[Math.floor(Math.random() * chars.length)];
       }
 
-      alert("Your password: " + password);
+      document.getElementById("passwordResult").innerText =
+        password;
     }
+
+
+    // QR Generator
+    function generateQR() {
+
+      const text =
+        document.getElementById("qrInput").value.trim();
+
+      if (text === "") {
+        alert("Please enter some text or a link.");
+        return;
+      }
+
+      const qrUrl =
+        "https://api.qrserver.com/v1/create-qr-code/?size=180x180&data="
+        + encodeURIComponent(text);
+
+      document.getElementById("qrImage").src = qrUrl;
+    }
+
   </script>
 
 </body>
 </html>
-
